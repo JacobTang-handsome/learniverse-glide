@@ -133,8 +133,8 @@ function AppLayout() {
           />
         </div>
 
-        <div className="mt-3 border-t border-border pt-3">
-          <Outlet context={{ profile, deviceId }} />
+        <div className="mt-3 flex min-h-[280px] flex-col border-t border-border pt-3">
+          <Outlet />
         </div>
       </aside>
 
