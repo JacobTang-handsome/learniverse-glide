@@ -1,26 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { loadProfile } from "@/lib/profile";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Lingua — AI language learning" },
+      {
+        name: "description",
+        content:
+          "A calm, AI-native way to learn Spanish, Catalan, and Italian. Your personal tutor, vocabulary cards, and immersive reading.",
+      },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const profile = loadProfile();
+    if (profile) navigate({ to: "/app" });
+    else navigate({ to: "/onboarding" });
+  }, [navigate]);
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="text-sm text-muted-foreground">Loading…</div>
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
