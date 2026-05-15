@@ -77,7 +77,7 @@ export const Route = createFileRoute("/api/chat")({
             const rows = finalMessages.map((m) => ({
               thread_id: body.threadId!,
               role: m.role,
-              parts: m.parts as unknown as object,
+              parts: JSON.parse(JSON.stringify(m.parts)),
             }));
             if (rows.length) {
               await supabaseAdmin.from("messages").insert(rows);
