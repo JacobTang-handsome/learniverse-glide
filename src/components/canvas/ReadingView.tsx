@@ -39,7 +39,16 @@ export function ReadingView({ profile }: { profile: Profile }) {
 
 function Chunk({ chunk, speechLang }: { chunk: TextChunk; speechLang: string }) {
   if (chunk.type === "text") return <>{chunk.text}</>;
+  return <WordChunk chunk={chunk} speechLang={speechLang} />;
+}
 
+function WordChunk({
+  chunk,
+  speechLang,
+}: {
+  chunk: Extract<TextChunk, { type: "word" }>;
+  speechLang: string;
+}) {
   function speak() {
     if (typeof window === "undefined") return;
     const u = new SpeechSynthesisUtterance(chunk.word);
