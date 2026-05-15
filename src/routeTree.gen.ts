@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppThreadIdRouteImport } from './routes/app.$threadId'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppThreadIdRoute = AppThreadIdRouteImport.update({
+  id: '/$threadId',
+  path: '/$threadId',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -37,34 +43,37 @@ const ApiChatRoute = ApiChatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/app/$threadId': typeof AppThreadIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/app/$threadId': typeof AppThreadIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/app/$threadId': typeof AppThreadIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/onboarding' | '/api/chat'
+  fullPaths: '/' | '/app' | '/onboarding' | '/api/chat' | '/app/$threadId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/onboarding' | '/api/chat'
-  id: '__root__' | '/' | '/app' | '/onboarding' | '/api/chat'
+  to: '/' | '/app' | '/onboarding' | '/api/chat' | '/app/$threadId'
+  id: '__root__' | '/' | '/app' | '/onboarding' | '/api/chat' | '/app/$threadId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
+  AppRoute: typeof AppRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
   ApiChatRoute: typeof ApiChatRoute
 }
@@ -92,6 +101,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/$threadId': {
+      id: '/app/$threadId'
+      path: '/$threadId'
+      fullPath: '/app/$threadId'
+      preLoaderRoute: typeof AppThreadIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -102,12 +118,32 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppRouteChildren {
+  AppThreadIdRoute: typeof AppThreadIdRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppThreadIdRoute: AppThreadIdRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
+  AppRoute: AppRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
