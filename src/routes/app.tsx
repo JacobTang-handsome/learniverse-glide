@@ -7,7 +7,23 @@ import { ThreadList, type ThreadRow } from "@/components/dashboard/ThreadList";
 import { CanvasTabs, type CanvasView } from "@/components/canvas/CanvasTabs";
 import { VocabularyView } from "@/components/canvas/VocabularyView";
 import { ReadingView } from "@/components/canvas/ReadingView";
-import { loadProfile, type Profile } from "@/lib/profile";
+import { LogOut } from "lucide-react";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { StatsCard } from "@/components/dashboard/StatsCard";
+import { ThreadList, type ThreadRow } from "@/components/dashboard/ThreadList";
+import { CanvasTabs, type CanvasView } from "@/components/canvas/CanvasTabs";
+import { VocabularyView } from "@/components/canvas/VocabularyView";
+import { ReadingView } from "@/components/canvas/ReadingView";
+import { loadProfile, clearProfile, type Profile } from "@/lib/profile";
+import { getDeviceId } from "@/lib/device";
+import {
+  createThread,
+  deleteThread,
+  listThreads,
+} from "@/lib/chat.functions";
 import { getDeviceId } from "@/lib/device";
 import {
   createThread,
